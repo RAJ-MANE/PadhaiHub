@@ -7,65 +7,83 @@ CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
 DO $$
 DECLARE
-  new_uid uuid := gen_random_uuid();
+  target_uid uuid;
 BEGIN
-  -- 1. Insert into auth.users
-  INSERT INTO auth.users (
-    instance_id,
-    id,
-    aud,
-    role,
-    email,
-    encrypted_password,
-    email_confirmed_at,
-    raw_app_meta_data,
-    raw_user_meta_data,
-    created_at,
-    updated_at,
-    confirmation_token,
-    recovery_token,
-    email_change_token_new,
-    email_change
-  )
-  VALUES (
-    '00000000-0000-0000-0000-000000000000',
-    new_uid,
-    'authenticated',
-    'authenticated',
-    'admin@padhaihub.com',
-    crypt('admin123', gen_salt('bf')), -- Password: admin123
-    now(),
-    '{"provider": "email", "providers": ["email"]}',
-    '{"full_name": "System Admin"}',
-    now(),
-    now(),
-    '',
-    '',
-    '',
-    ''
-  );
+  -- 1. Check if user already exists
+  SELECT id INTO target_uid FROM auth.users WHERE email = 'admin@padhaihub.com';
 
-  -- 2. Insert into public.profiles (Admin Role)
-  INSERT INTO public.profiles (id, full_name, role)
-  VALUES (new_uid, 'System Admin', 'admin');
+  IF target_uid IS NOT NULL THEN
+    -- User exists: Just promote to Admin
+    INSERT INTO public.profiles (id, full_name, role)
+    VALUES (target_uid, 'System Admin', 'admin')
+    ON CONFLICT (id) DO UPDATE SET role = 'admin';
+    
+    RAISE NOTICE 'User admin@padhaihub.com already exists. Updated role to Admin.';
+  
+  ELSE
+    -- User does NOT exist: Create new
+    target_uid := gen_random_uuid();
 
-  -- 3. Insert into auth.identities (Required for login to work properly)
-  INSERT INTO auth.identities (
-    id,
-    user_id,
-    identity_data,
-    provider,
-    last_sign_in_at,
-    created_at,
-    updated_at
-  )
-  VALUES (
-    gen_random_uuid(),
-    new_uid,
-    format('{"sub": "%s", "email": "admin@padhaihub.com"}', new_uid)::jsonb,
-    'email',
-    now(),
-    now(),
-    now()
-  );
+    INSERT INTO auth.users (
+      instance_id,
+      id,
+      aud,
+      role,
+      email,
+      encrypted_password,
+      email_confirmed_at,
+      raw_app_meta_data,
+      raw_user_meta_data,
+      created_at,
+      updated_at,
+      confirmation_token,
+      recovery_token,
+      email_change_token_new,
+      email_change
+    )
+    VALUES (
+      '00000000-0000-0000-0000-000000000000',
+      target_uid,
+      'authenticated',
+      'authenticated',
+      'admin@padhaihub.com',
+      crypt('admin123', gen_salt('bf')),
+      now(),
+      '{"provider": "email", "providers": ["email"]}',
+      '{"full_name": "System Admin"}',
+      now(),
+      now(),
+      '',
+      '',
+      '',
+      ''
+    );
+
+    -- 2. Insert/Update Profile (Handle Trigger collision with ON CONFLICT)
+    INSERT INTO public.profiles (id, full_name, role)
+    VALUES (target_uid, 'System Admin', 'admin')
+    ON CONFLICT (id) DO UPDATE SET role = 'admin', full_name = 'System Admin';
+
+    -- 3. Insert Identity
+    INSERT INTO auth.identities (
+      id,
+      user_id,
+      identity_data,
+      provider,
+      last_sign_in_at,
+      created_at,
+      updated_at
+    )
+    VALUES (
+      gen_random_uuid(),
+      target_uid,
+      format('{"sub": "%s", "email": "admin@padhaihub.com"}', target_uid)::jsonb,
+      'email',
+      now(),
+      now(),
+      now()
+    );
+    
+    RAISE NOTICE 'Created new user admin@padhaihub.com with Admin role.';
+  END IF;
 END $$;
