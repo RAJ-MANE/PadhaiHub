@@ -1,6 +1,5 @@
 import { createClient } from "@/utils/supabase/server";
 import { notFound, redirect } from "next/navigation";
-import PDFViewerLoader from "@/components/PDFViewerLoader";
 
 export default async function DocumentViewerPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
@@ -43,7 +42,11 @@ export default async function DocumentViewerPage({ params }: { params: Promise<{
 
                     {doc.type === 'pdf' ? (
                         <div className="w-full h-full relative z-10">
-                            <PDFViewerLoader url={finalUrl} />
+                            <iframe
+                                src={`${finalUrl}#toolbar=0&navpanes=0`}
+                                className="w-full h-full border-none"
+                                title={doc.title}
+                            />
                         </div>
                     ) : (
                         <div className="text-white">Video Player Placeholder</div>

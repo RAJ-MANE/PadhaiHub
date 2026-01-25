@@ -8,7 +8,7 @@ export default async function BrowsePage() {
     const { data: semesters } = await supabase.from("semesters").select("*").order("created_at", { ascending: false });
 
     return (
-        <div className="container py-12 space-y-8 animate-in fade-in duration-500">
+        <div className="container min-h-screen flex flex-col justify-center py-12 space-y-8 animate-in fade-in duration-500">
             <div className="text-center max-w-2xl mx-auto">
                 <h1 className="text-4xl font-bold tracking-tight mb-4">Browse Semesters</h1>
                 <p className="text-muted-foreground text-lg">Choose your semester and unlock premium resources.</p>
