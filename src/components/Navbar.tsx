@@ -14,11 +14,15 @@ export default async function Navbar() {
     let debugInfo = { role: 'undefined', error: 'none', userId: user?.id };
 
     if (user) {
-        const { data: profile, error } = await supabase.from('profiles').select('role').eq('id', user.id).single();
-        debugInfo = { role: profile?.role || 'null', error: error?.message || 'none', userId: user.id };
+        try {
+            const { data: profile, error } = await supabase.from('profiles').select('role').eq('id', user.id).single();
+            debugInfo = { role: profile?.role || 'null', error: error?.message || 'none', userId: user.id };
 
-        if (profile?.role === 'admin') {
-            isAdmin = true;
+            if (profile?.role === 'admin') {
+                isAdmin = true;
+            }
+        } catch (e: any) {
+            debugInfo = { role: 'error', error: e.message, userId: user.id };
         }
     }
 
