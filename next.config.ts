@@ -15,6 +15,7 @@ const nextConfig: NextConfig = {
     serverActions: {
       bodySizeLimit: '50mb',
     },
+    serverComponentsExternalPackages: ['pdfjs-dist', 'canvas'],
   },
   webpack: (config) => {
     config.resolve.alias.canvas = false;
