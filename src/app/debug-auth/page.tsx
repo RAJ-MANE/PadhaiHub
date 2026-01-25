@@ -22,6 +22,11 @@ export default async function DebugAuthPage() {
         profileError = result.error;
     }
 
+    // 3. Check Public Data (Semesters)
+    const { count: semesterCount, error: semesterError } = await supabase
+        .from("semesters")
+        .select("*", { count: "exact", head: true });
+
     return (
         <div className="p-8 bg-black text-white min-h-screen font-mono whitespace-pre-wrap">
             <h1 className="text-2xl font-bold mb-4 text-yellow-400">Auth & Permissions Debugger</h1>
@@ -64,6 +69,26 @@ export default async function DebugAuthPage() {
                     ) : (
                         <div className="text-yellow-500">
                             Result is NULL. (Row might not exist, or RLS hides it)
+                        </div>
+                    )}
+                </section>
+
+                <section className="border p-4 rounded border-gray-700">
+                    <h2 className="text-xl border-b border-gray-700 pb-2 mb-2">3. Public Data Access (Semesters)</h2>
+                    <p className="text-sm text-gray-400 mb-2">
+                        Checking if 'semesters' table is readable:
+                    </p>
+                    {semesterError ? (
+                        <div className="bg-red-900/30 p-4 border border-red-500 text-red-200">
+                            <strong>READ FAILED</strong> <br />
+                            Message: {semesterError.message} <br />
+                            Hint: RLS Policy for 'SELECT' might be missing.
+                        </div>
+                    ) : (
+                        <div className="bg-green-900/30 p-4 border border-green-500 text-green-200">
+                            <strong>SUCCESS</strong> <br />
+                            Rows Found: {semesterCount} <br />
+                            (If 0, table might be empty, but access is working)
                         </div>
                     )}
                 </section>

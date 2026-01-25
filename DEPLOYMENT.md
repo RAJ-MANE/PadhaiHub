@@ -40,5 +40,9 @@ This application is built with **Next.js 15+** and **Supabase**, making **Vercel
 ## Troubleshooting
 
 -   **Build Fails?** Check the "Logs" tab in Vercel.
+-   **"Couldn't find any pages or app directory"?** 
+    -   This means Vercel is looking in the wrong folder. 
+    -   Go to **Settings -> General -> Root Directory**.
+    -   Ensure it is set to the folder containing your `package.json` (usually `./` or `E-RESOURCES` if it's inside a subfolder).
 -   **Images not showing?** Ensure the `images` domain in `next.config.ts` matches your Supabase URL.
 -   **Payments failing?** Verify Razorpay keys are correct and in "Production" mode (not Test mode) if going live.
