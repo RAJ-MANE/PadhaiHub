@@ -10,15 +10,15 @@ DECLARE
   target_uid uuid;
 BEGIN
   -- 1. Check if user already exists
-  SELECT id INTO target_uid FROM auth.users WHERE email = 'admin@padhaihub.com';
+  SELECT id INTO target_uid FROM auth.users WHERE email = 'raj@rajmane.com';
 
   IF target_uid IS NOT NULL THEN
     -- User exists: Just promote to Admin
     INSERT INTO public.profiles (id, full_name, role)
-    VALUES (target_uid, 'System Admin', 'admin')
-    ON CONFLICT (id) DO UPDATE SET role = 'admin';
+    VALUES (target_uid, 'Raj Mane', 'admin')
+    ON CONFLICT (id) DO UPDATE SET role = 'admin', full_name = 'Raj Mane';
     
-    RAISE NOTICE 'User admin@padhaihub.com already exists. Updated role to Admin.';
+    RAISE NOTICE 'User raj@rajmane.com already exists. Updated role to Admin.';
   
   ELSE
     -- User does NOT exist: Create new
@@ -46,11 +46,11 @@ BEGIN
       target_uid,
       'authenticated',
       'authenticated',
-      'admin@padhaihub.com',
+      'raj@rajmane.com',
       crypt('admin123', gen_salt('bf')),
       now(),
       '{"provider": "email", "providers": ["email"]}',
-      '{"full_name": "System Admin"}',
+      '{"full_name": "Raj Mane"}',
       now(),
       now(),
       '',
@@ -61,8 +61,8 @@ BEGIN
 
     -- 2. Insert/Update Profile (Handle Trigger collision with ON CONFLICT)
     INSERT INTO public.profiles (id, full_name, role)
-    VALUES (target_uid, 'System Admin', 'admin')
-    ON CONFLICT (id) DO UPDATE SET role = 'admin', full_name = 'System Admin';
+    VALUES (target_uid, 'Raj Mane', 'admin')
+    ON CONFLICT (id) DO UPDATE SET role = 'admin', full_name = 'Raj Mane';
 
     -- 3. Insert Identity
     INSERT INTO auth.identities (
@@ -70,6 +70,7 @@ BEGIN
       user_id,
       identity_data,
       provider,
+      provider_id,
       last_sign_in_at,
       created_at,
       updated_at
@@ -77,13 +78,14 @@ BEGIN
     VALUES (
       gen_random_uuid(),
       target_uid,
-      format('{"sub": "%s", "email": "admin@padhaihub.com"}', target_uid)::jsonb,
+      format('{"sub": "%s", "email": "raj@rajmane.com"}', target_uid)::jsonb,
       'email',
+      target_uid, -- Use user_id as provider_id for email auth
       now(),
       now(),
       now()
     );
     
-    RAISE NOTICE 'Created new user admin@padhaihub.com with Admin role.';
+    RAISE NOTICE 'Created new user raj@rajmane.com with Admin role.';
   END IF;
 END $$;
