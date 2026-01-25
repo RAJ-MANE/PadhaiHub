@@ -10,8 +10,8 @@ export default async function Home() {
   return (
     <div className="min-h-screen flex flex-col auth-bg">
       {/* Hero Section */}
-      <section className="min-h-screen flex flex-col items-center justify-center text-center px-4 pt-20">
-        <div className="animate-in fade-in slide-in-from-bottom-5 duration-700">
+      <section className="min-h-screen flex flex-col items-center justify-center text-center pt-20">
+        <div className="container animate-in fade-in slide-in-from-bottom-5 duration-700">
           <h1 className="text-6xl md:text-8xl font-bold tracking-tighter mb-6 text-gradient">
             PadhaiHub
           </h1>

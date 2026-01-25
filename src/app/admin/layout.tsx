@@ -147,9 +147,11 @@ USING (exists (select 1 from public.profiles where id = auth.uid() and role = 'a
                     </nav>
                 </div>
             </aside>
-            <main className="flex-1 overflow-y-auto p-8">
-                <AdminMobileSidebar />
-                {children}
+            <main className="flex-1 overflow-y-auto p-4 md:p-8">
+                <div className="max-w-7xl mx-auto space-y-6">
+                    <AdminMobileSidebar />
+                    {children}
+                </div>
             </main>
         </div>
     );
