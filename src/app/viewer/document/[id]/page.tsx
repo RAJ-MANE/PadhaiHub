@@ -30,17 +30,26 @@ export default async function DocumentViewerPage({ params }: { params: Promise<{
     // Generate Signed URL if it's a private path (doesn't start with http)
     let finalUrl = doc.file_url;
     if (!doc.file_url.startsWith("http")) {
-        const { data, error } = await supabase.storage
-            .from("course-content")
-            .createSignedUrl(doc.file_url, 3600); // 1 hour expiry
+        try {
+            const { data, error } = await supabase.storage
+                .from("course-content")
+                .createSignedUrl(doc.file_url, 3600); // 1 hour expiry
 
-        if (data?.signedUrl) {
-            finalUrl = data.signedUrl;
+            if (data?.signedUrl) {
+                finalUrl = data.signedUrl;
+            } else if (error) {
+                console.error("Error signing URL:", error);
+                // Fallback: Try public URL if signing fails (assuming public bucket)
+                const { data: publicData } = supabase.storage.from("course-content").getPublicUrl(doc.file_url);
+                finalUrl = publicData.publicUrl;
+            }
+        } catch (e) {
+            console.error("Exception signing URL:", e);
         }
     }
 
     return (
-        <div className="flex flex-col h-screen bg-black overflow-hidden select-none" onContextMenu={() => "return false;"}>
+        <div className="flex flex-col h-screen bg-black overflow-hidden select-none" onContextMenu={(e) => e.preventDefault()}>
             {/* Top Bar */}
             <div className="flex items-center justify-between px-6 py-4 bg-zinc-900 border-b border-white/10 z-50">
                 <h1 className="font-semibold text-white truncate">{doc.title}</h1>
