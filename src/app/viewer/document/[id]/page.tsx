@@ -5,9 +5,9 @@ export default async function DocumentViewerPage({ params }: { params: Promise<{
     const { id } = await params;
     const supabase = await createClient();
 
-    // Verify Auth
+    // Verify Auth (DISABLED for Public Access)
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) redirect("/login");
+    // if (!user) redirect("/login");
 
     // Fetch Document
     const { data: doc } = await supabase.from("documents").select("*").eq("id", id).single();
@@ -65,7 +65,7 @@ export default async function DocumentViewerPage({ params }: { params: Promise<{
 
             {/* Watermark Overlay dynamic */}
             <div className="fixed inset-0 pointer-events-none z-[100] flex items-center justify-center opacity-[0.02] -rotate-45">
-                <span className="text-9xl font-bold whitespace-nowrap">{user.email}</span>
+                <span className="text-9xl font-bold whitespace-nowrap">{user?.email || "Guest Viewer"}</span>
             </div>
         </div>
     );
