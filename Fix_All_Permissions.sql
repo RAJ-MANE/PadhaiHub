@@ -41,7 +41,11 @@ WHERE id IN (
 );
 
 -- 5. Grant Admin Delete/Update/Insert Rights
--- (These might already exist from previous scripts, but good to ensure)
+-- Drop first to avoid "policy already exists" errors
+DROP POLICY IF EXISTS "Admins can insert semesters" ON public.semesters;
+DROP POLICY IF EXISTS "Admins can update semesters" ON public.semesters;
+DROP POLICY IF EXISTS "Admins can delete semesters" ON public.semesters;
+
 CREATE POLICY "Admins can insert semesters" ON public.semesters FOR INSERT WITH CHECK (
   exists (select 1 from public.profiles where id = auth.uid() and role = 'admin')
 );
@@ -53,6 +57,10 @@ CREATE POLICY "Admins can delete semesters" ON public.semesters FOR DELETE USING
 );
 
 -- Repeat for Subjects
+DROP POLICY IF EXISTS "Admins can insert subjects" ON public.subjects;
+DROP POLICY IF EXISTS "Admins can update subjects" ON public.subjects;
+DROP POLICY IF EXISTS "Admins can delete subjects" ON public.subjects;
+
 CREATE POLICY "Admins can insert subjects" ON public.subjects FOR INSERT WITH CHECK (
   exists (select 1 from public.profiles where id = auth.uid() and role = 'admin')
 );
@@ -64,6 +72,10 @@ CREATE POLICY "Admins can delete subjects" ON public.subjects FOR DELETE USING (
 );
 
 -- Repeat for Documents
+DROP POLICY IF EXISTS "Admins can insert documents" ON public.documents;
+DROP POLICY IF EXISTS "Admins can update documents" ON public.documents;
+DROP POLICY IF EXISTS "Admins can delete documents" ON public.documents;
+
 CREATE POLICY "Admins can insert documents" ON public.documents FOR INSERT WITH CHECK (
   exists (select 1 from public.profiles where id = auth.uid() and role = 'admin')
 );
