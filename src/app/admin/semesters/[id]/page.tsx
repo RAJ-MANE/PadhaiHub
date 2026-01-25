@@ -1,4 +1,5 @@
 import { createSubject, deleteSubject } from "@/app/admin/actions";
+import EditSemesterForm from "@/components/admin/EditSemesterForm";
 import { Button } from "@/components/ui/Button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/Card";
 import { createClient } from "@/utils/supabase/server";
@@ -76,6 +77,15 @@ export default async function SemesterDetailsPage({ params }: { params: Promise<
 
                 {/* Sidebar: Add Subject Form */}
                 <div className="space-y-6">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Semester Settings</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <EditSemesterForm semester={semester} />
+                        </CardContent>
+                    </Card>
+
                     <Card>
                         <CardHeader>
                             <CardTitle>Add Subject</CardTitle>

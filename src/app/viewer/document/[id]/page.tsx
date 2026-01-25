@@ -1,5 +1,6 @@
 import { createClient } from "@/utils/supabase/server";
 import { notFound, redirect } from "next/navigation";
+import PDFViewerLoader from "@/components/PDFViewerLoader";
 
 export default async function DocumentViewerPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
@@ -28,7 +29,7 @@ export default async function DocumentViewerPage({ params }: { params: Promise<{
         }
 
         return (
-            <div className="flex flex-col h-screen bg-black overflow-hidden select-none" onContextMenu={(e) => e.preventDefault()}>
+            <div className="flex flex-col h-screen bg-black overflow-hidden select-none">
                 {/* Top Bar */}
                 <div className="flex items-center justify-between px-6 py-4 bg-zinc-900 border-b border-white/10 z-50">
                     <h1 className="font-semibold text-white truncate">{doc.title}</h1>
@@ -36,16 +37,14 @@ export default async function DocumentViewerPage({ params }: { params: Promise<{
                 </div>
 
                 {/* Content Area - Protected Canvas/Frame */}
-                <div className="flex-1 relative flex items-center justify-center bg-zinc-950 secure-view">
+                <div className="flex-1 relative flex flex-col bg-zinc-950 secure-view min-h-0">
                     {/* Anti-screenshot overlay (Visual deterrent) */}
                     <div className="absolute inset-0 pointer-events-none z-50 bg-repeat opacity-[0.03]" style={{ backgroundImage: "url('/watermark_pattern.png')" }}></div>
 
                     {doc.type === 'pdf' ? (
-                        <iframe
-                            src={`${finalUrl}#toolbar=0&navpanes=0`}
-                            className="w-full h-full border-none pointer-events-auto"
-                            style={{ pointerEvents: 'auto' }}
-                        />
+                        <div className="w-full h-full relative z-10">
+                            <PDFViewerLoader url={finalUrl} />
+                        </div>
                     ) : (
                         <div className="text-white">Video Player Placeholder</div>
                     )}

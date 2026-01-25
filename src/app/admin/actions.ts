@@ -44,6 +44,30 @@ export async function createSemester(formData: FormData) {
     redirect("/admin/semesters");
 }
 
+export async function updateSemester(formData: FormData) {
+    const supabase = await createClient();
+
+    const id = formData.get("id") as string;
+    const title = formData.get("title") as string;
+    const description = formData.get("description") as string;
+    const price = parseFloat(formData.get("price") as string);
+
+    if (!id) throw new Error("Semester ID is required");
+
+    const { error } = await supabase.from("semesters").update({
+        title,
+        description,
+        price,
+    }).eq("id", id);
+
+    if (error) {
+        throw new Error(error.message);
+    }
+
+    revalidatePath(`/admin/semesters/${id}`);
+    revalidatePath("/admin/semesters");
+}
+
 export async function createSubject(formData: FormData) {
     const supabase = await createClient();
 
