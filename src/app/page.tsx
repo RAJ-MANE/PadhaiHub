@@ -13,7 +13,7 @@ export default async function Home() {
       <section className="min-h-screen flex flex-col items-center justify-center text-center pt-20">
         <div className="container animate-in fade-in slide-in-from-bottom-5 duration-700">
           <h1 className="text-6xl md:text-8xl font-bold tracking-tighter mb-6 text-gradient">
-            PadhaiHub
+            ScholarSource
           </h1>
           <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-2xl mx-auto">
             Your premium gateway to academic excellence. Access top-tier semesters, subjects, and study materials.
@@ -94,7 +94,7 @@ export default async function Home() {
       {/* Footer */}
       <footer className="py-12 border-t border-white/10 bg-black/40 text-center text-muted-foreground">
         <div className="container mx-auto">
-          <p>&copy; {new Date().getFullYear()} PadhaiHub. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} ScholarSource. All rights reserved.</p>
         </div>
       </footer>
     </div>

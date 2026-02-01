@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "PadhaiHub | Premium Educational Content",
+  title: "ScholarSource | Premium Educational Content",
   description: "Access premium semesters, subjects and documents.",
 };
 

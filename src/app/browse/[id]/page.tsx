@@ -19,6 +19,21 @@ export default async function SemesterConfig({ params }: { params: Promise<{ id:
         .eq("semester_id", id)
         .order("created_at", { ascending: true });
 
+    let hasAccess = false;
+    if (user) {
+        const { data: purchase } = await supabase
+            .from("purchases")
+            .select("id")
+            .eq("user_id", user.id)
+            .eq("semester_id", id)
+            .eq("status", "completed")
+            .maybeSingle();
+
+        if (purchase) {
+            hasAccess = true;
+        }
+    }
+
     return (
         <div className="container max-w-6xl py-12 animate-in fade-in duration-500">
             <Link href="/browse" className="text-muted-foreground hover:text-white mb-8 inline-block transition-colors">
@@ -35,9 +50,15 @@ export default async function SemesterConfig({ params }: { params: Promise<{ id:
                     <div>
                         <h1 className="text-3xl font-bold tracking-tight mb-2">{semester.title}</h1>
                         <p className="text-muted-foreground">{semester.description}</p>
-                        <div className="mt-4 flex items-center gap-2 text-green-400 font-medium bg-green-900/20 p-2 rounded border border-green-900/50 w-fit">
-                            <span>🔓</span> Free Access Enabled
-                        </div>
+                        {hasAccess ? (
+                            <div className="mt-4 flex items-center gap-2 text-green-400 font-medium bg-green-900/20 p-2 rounded border border-green-900/50 w-fit">
+                                <span>✅</span> You have access
+                            </div>
+                        ) : (
+                            <div className="mt-4 flex items-center gap-2 text-yellow-400 font-medium bg-yellow-900/20 p-2 rounded border border-yellow-900/50 w-fit">
+                                <span>🔒</span> Premium Content
+                            </div>
+                        )}
                     </div>
                 </div>
 
@@ -45,44 +66,70 @@ export default async function SemesterConfig({ params }: { params: Promise<{ id:
                 <div className="lg:col-span-2 space-y-6">
                     <h2 className="text-2xl font-bold mb-4">Course Content</h2>
 
-                    {subjects?.length === 0 ? (
-                        <div className="text-muted-foreground text-center py-12 bg-white/5 rounded-xl border border-white/10">
-                            No subjects found in this semester.
-                        </div>
-                    ) : (
-                        subjects?.map((subject) => (
-                            <div key={subject.id} className="bg-white/5 rounded-xl border border-white/10 overflow-hidden">
-                                <div className="px-6 py-4 bg-white/5 border-b border-white/5">
-                                    <h3 className="font-semibold text-lg">{subject.title}</h3>
+                    {hasAccess ? (
+                        <>
+                            {subjects?.length === 0 ? (
+                                <div className="text-muted-foreground text-center py-12 bg-white/5 rounded-xl border border-white/10">
+                                    No subjects found in this semester.
                                 </div>
-                                <div className="divide-y divide-white/5">
-                                    {subject.documents && subject.documents.length > 0 ? (
-                                        subject.documents.map((doc: any) => (
-                                            <div key={doc.id} className="px-6 py-4 flex items-center justify-between hover:bg-white/5 transition-colors group">
-                                                <div className="flex items-center gap-3">
-                                                    <span className="text-2xl group-hover:scale-110 transition-transform">
-                                                        {doc.type === 'pdf' ? '📄' : '🎥'}
-                                                    </span>
-                                                    <div>
-                                                        <p className="font-medium group-hover:text-primary transition-colors">{doc.title}</p>
-                                                        <p className="text-xs text-muted-foreground uppercase">{doc.type}</p>
-                                                    </div>
-                                                </div>
-                                                <Link href={`/viewer/document/${doc.id}`} target="_blank">
-                                                    <Button variant="outline" size="sm" className="gap-2">
-                                                        View <span className="text-xs">↗</span>
-                                                    </Button>
-                                                </Link>
-                                            </div>
-                                        ))
-                                    ) : (
-                                        <div className="px-6 py-4 text-sm text-muted-foreground italic">
-                                            No documents yet.
+                            ) : (
+                                subjects?.map((subject) => (
+                                    <div key={subject.id} className="bg-white/5 rounded-xl border border-white/10 overflow-hidden">
+                                        <div className="px-6 py-4 bg-white/5 border-b border-white/5">
+                                            <h3 className="font-semibold text-lg">{subject.title}</h3>
                                         </div>
-                                    )}
-                                </div>
+                                        <div className="divide-y divide-white/5">
+                                            {subject.documents && subject.documents.length > 0 ? (
+                                                subject.documents.map((doc: any) => (
+                                                    <div key={doc.id} className="px-6 py-4 flex items-center justify-between hover:bg-white/5 transition-colors group">
+                                                        <div className="flex items-center gap-3">
+                                                            <span className="text-2xl group-hover:scale-110 transition-transform">
+                                                                {doc.type === 'pdf' ? '📄' : '🎥'}
+                                                            </span>
+                                                            <div>
+                                                                <p className="font-medium group-hover:text-primary transition-colors">{doc.title}</p>
+                                                                <p className="text-xs text-muted-foreground uppercase">{doc.type}</p>
+                                                            </div>
+                                                        </div>
+                                                        <Link href={`/viewer/document/${doc.id}`} target="_blank">
+                                                            <Button variant="outline" size="sm" className="gap-2">
+                                                                View <span className="text-xs">↗</span>
+                                                            </Button>
+                                                        </Link>
+                                                    </div>
+                                                ))
+                                            ) : (
+                                                <div className="px-6 py-4 text-sm text-muted-foreground italic">
+                                                    No documents yet.
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                ))
+                            )}
+                        </>
+                    ) : (
+                        <div className="bg-white/5 rounded-2xl border border-white/10 p-8 text-center space-y-6">
+                            <div className="w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center mx-auto text-3xl">
+                                🔒
                             </div>
-                        ))
+                            <div>
+                                <h2 className="text-2xl font-bold mb-2">Unlock Full Access</h2>
+                                <p className="text-muted-foreground max-w-md mx-auto">
+                                    Get unlimited access to all subjects, notes, and question banks in this semester.
+                                </p>
+                            </div>
+
+                            <div className="flex flex-col items-center gap-4">
+                                <div className="text-3xl font-bold">₹{semester.price}</div>
+                                <RazorpayButton
+                                    semesterId={semester.id}
+                                    price={semester.price}
+                                    title={semester.title}
+                                />
+                                <p className="text-xs text-muted-foreground">Secure payment via Razorpay</p>
+                            </div>
+                        </div>
                     )}
                 </div>
             </div>

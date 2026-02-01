@@ -12,10 +12,17 @@ export default async function DashboardPage() {
         redirect("/login");
     }
 
-    // Fetch Purchases (Mocked query or real if table exists)
-    // const { data: purchases } = await supabase.from('purchases').select('*, semesters(*)').eq('user_id', user.id);
-    // For demo, we'll show a placeholder or empty state
-    const purchases: any[] = [];
+    // Fetch Purchases
+    const { data: purchases } = await supabase
+        .from('purchases')
+        .select('*, semesters(*)')
+        .eq('user_id', user.id)
+        .eq('status', 'completed')
+        .order('created_at', { ascending: false });
+
+    if (!purchases) {
+        // Handle error or empty case gracefully if needed, though purchases can be null/empty array
+    }
 
     return (
         <div className="container py-12 space-y-8 animate-in fade-in duration-500">
@@ -25,7 +32,7 @@ export default async function DashboardPage() {
             </div>
 
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {purchases.map((purchase) => (
+                {purchases?.map((purchase) => (
                     <Card key={purchase.id}>
                         <CardHeader>
                             <CardTitle>{purchase.semesters.title}</CardTitle>
@@ -38,7 +45,7 @@ export default async function DashboardPage() {
                         </CardFooter>
                     </Card>
                 ))}
-                {purchases.length === 0 && (
+                {(!purchases || purchases.length === 0) && (
                     <div className="col-span-full text-center py-12 bg-white/5 rounded-xl border border-dashed border-white/10">
                         <p className="text-muted-foreground mb-4">You haven't purchased any semesters yet.</p>
                         <Link href="/browse">

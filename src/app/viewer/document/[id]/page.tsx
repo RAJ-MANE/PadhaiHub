@@ -5,15 +5,37 @@ export default async function DocumentViewerPage({ params }: { params: Promise<{
     const { id } = await params;
     const supabase = await createClient();
 
-    // Verify Auth (DISABLED for Public Access)
+    // Verify Auth
     const { data: { user } } = await supabase.auth.getUser();
-    // if (!user) redirect("/login");
+    if (!user) redirect("/login");
 
     try {
-        // Fetch Document
-        const { data: doc, error: docError } = await supabase.from("documents").select("*").eq("id", id).single();
+        // Fetch Document with Semester ID
+        const { data: doc, error: docError } = await supabase
+            .from("documents")
+            .select("*, subjects(semester_id)")
+            .eq("id", id)
+            .single();
+
         if (docError) throw new Error("DB Error: " + docError.message);
         if (!doc) notFound();
+
+        // Check Purchase Access
+        // @ts-ignore
+        const semesterId = doc.subjects?.semester_id;
+
+        const { data: purchase } = await supabase
+            .from("purchases")
+            .select("id")
+            .eq("user_id", user.id)
+            .eq("semester_id", semesterId)
+            .eq("status", "completed") // Ensure payment is completed
+            .maybeSingle();
+
+        // If no purchase found, redirect to purchase page
+        if (!purchase) {
+            redirect(`/browse/${semesterId}`);
+        }
 
         // Generate Signed URL if it's a private path (doesn't start with http)
         let finalUrl = doc.file_url;

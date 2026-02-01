@@ -88,8 +88,7 @@ body {
   user-select: none;
   -webkit-user-select: none;
   -moz-user-select: none;
-  pointer-events: none;
-  /* Be careful with this, blocks interaction */
+  /* pointer-events: none; - Removed to allow scrolling */
 }
 
 /* Custom Scrollbar */

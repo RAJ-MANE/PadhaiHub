@@ -32,7 +32,7 @@ export default function RazorpayButton({ semesterId, price, title }: { semesterI
                 key: data.keyId,
                 amount: data.amount,
                 currency: data.currency,
-                name: "PadhaiHub",
+                name: "ScholarSource",
                 description: `Purchase ${title}`,
                 order_id: data.orderId,
                 handler: async function (response: any) {
