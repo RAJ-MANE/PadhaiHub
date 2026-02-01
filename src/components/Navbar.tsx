@@ -29,9 +29,9 @@ export default async function Navbar() {
 
     return (
         <nav className="fixed top-0 w-full z-50 transition-all duration-300 border-b border-white/5 bg-black/50 backdrop-blur-xl">
-            <div className="container flex h-16 items-center justify-between">
-                <Link href="/" className="flex items-center gap-2 font-bold text-xl">
-                    <div className="relative w-8 h-8 md:w-10 md:h-10">
+            <div className="container flex h-16 items-center justify-between px-4 md:px-8">
+                <Link href="/" className="flex items-center gap-2 font-bold text-lg md:text-xl">
+                    <div className="relative w-8 h-8 md:w-10 md:h-10 shrink-0">
                         <Image
                             src="/logo.png"
                             alt="ScholarSource Logo"
@@ -39,7 +39,7 @@ export default async function Navbar() {
                             className="object-contain"
                         />
                     </div>
-                    <span>ScholarSource</span>
+                    <span className="truncate max-w-[150px] md:max-w-none">ScholarSource</span>
                 </Link>
 
                 {/* DEBUG BANNER - REMOVE LATER */}

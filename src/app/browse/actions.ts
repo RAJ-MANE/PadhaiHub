@@ -24,6 +24,12 @@ export async function createRazorpayOrder(semesterId: string, price: number) {
         return { alreadyPurchased: true };
     }
 
+    // 0. CHECK ENVIRONMENT VARIABLES
+    if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
+        console.error("Razorpay Keys Missing! Check .env.local");
+        throw new Error("Payment service not configured (Missing Keys)");
+    }
+
     // 2. Create Razorpay Order
     const options = {
         amount: price * 100, // Razorpay expects amount in paise
