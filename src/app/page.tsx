@@ -11,8 +11,8 @@ export default async function Home() {
     <div className="min-h-screen flex flex-col auth-bg">
       {/* Hero Section */}
       <section className="min-h-screen flex flex-col items-center justify-center text-center pt-20">
-        <div className="container animate-in fade-in slide-in-from-bottom-5 duration-700">
-          <h1 className="text-6xl md:text-8xl font-bold tracking-tighter mb-6 text-gradient">
+        <div className="container animate-in fade-in slide-in-from-bottom-5 duration-700 px-4">
+          <h1 className="text-5xl md:text-8xl font-bold tracking-tighter mb-6 text-gradient break-words">
             ScholarSource
           </h1>
           <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-2xl mx-auto">
